@@ -1,14 +1,21 @@
 package com.example.pomodoro.tile
 
 import android.content.Context
-import androidx.wear.protolayout.ColorBuilders.argb
+import android.util.DisplayMetrics
+import android.view.WindowManager
+import androidx.wear.protolayout.ColorBuilders.ColorProp
+import androidx.wear.protolayout.DimensionBuilders.DegreesProp
+import androidx.wear.protolayout.DimensionBuilders.DpProp
 import androidx.wear.protolayout.LayoutElementBuilders
+import androidx.wear.protolayout.LayoutElementBuilders.ARC_ANCHOR_START
+import androidx.wear.protolayout.LayoutElementBuilders.Arc
+import androidx.wear.protolayout.LayoutElementBuilders.ArcLine
+import androidx.wear.protolayout.LayoutElementBuilders.Box
+import androidx.wear.protolayout.LayoutElementBuilders.LayoutElement
+import androidx.wear.protolayout.LayoutElementBuilders.STROKE_CAP_BUTT
 import androidx.wear.protolayout.ResourceBuilders
 import androidx.wear.protolayout.TimelineBuilders
-import androidx.wear.protolayout.material.Colors
-import androidx.wear.protolayout.material.Text
-import androidx.wear.protolayout.material.Typography
-import androidx.wear.protolayout.material.layouts.PrimaryLayout
+import androidx.wear.protolayout.material.layouts.EdgeContentLayout
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
 import androidx.wear.tiles.tooling.preview.Preview
@@ -17,7 +24,17 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.tiles.SuspendingTileService
 
+
 private const val RESOURCES_VERSION = "0"
+
+val SECTION_GREEN = ColorProp.Builder(-936181966).build()
+val SECTION_RED = ColorProp.Builder(-922799566).build()
+val SECTION_BLUE = ColorProp.Builder(-936234241).build()
+
+const val WORK_LENGTH = 25
+const val BREAK_LENGTH = 5
+const val REST_LENGTH = 30
+const val CYCLE_NO = 3
 
 /**
  * Skeleton for a tile with no images.
@@ -68,14 +85,62 @@ private fun tileLayout(
     requestParams: RequestBuilders.TileRequest,
     context: Context,
 ): LayoutElementBuilders.LayoutElement {
-    return PrimaryLayout.Builder(requestParams.deviceConfiguration)
+    val totalTime = REST_LENGTH + (WORK_LENGTH + BREAK_LENGTH) * (CYCLE_NO -1) + WORK_LENGTH
+    val workAngle = WORK_LENGTH * 180f / totalTime
+    val breakAngle = BREAK_LENGTH * 180f / totalTime
+    val restAngle = REST_LENGTH * 180f / totalTime
+    val box = Box.Builder()
+    var curAngle = 0f
+    for (i in 1..<CYCLE_NO) {
+        box.addContent(
+            makeSection(curAngle, workAngle, SECTION_RED)
+        )
+        curAngle += workAngle
+        box.addContent(
+            makeSection(curAngle, breakAngle, SECTION_GREEN)
+        )
+        curAngle += breakAngle
+    }
+    box.addContent(
+        makeSection(curAngle, workAngle, SECTION_RED)
+    )
+    curAngle += workAngle
+    box.addContent(
+        makeSection(curAngle, restAngle, SECTION_BLUE)
+    )
+    return EdgeContentLayout.Builder(requestParams.deviceConfiguration)
         .setResponsiveContentInsetEnabled(true)
+        .setEdgeContentBehindAllOtherContent(true)
+        .setEdgeContent(
+            box.build()
+        )
         .setContent(
-            Text.Builder(context, "Hello World!")
-                .setColor(argb(Colors.DEFAULT.onSurface))
-                .setTypography(Typography.TYPOGRAPHY_CAPTION1)
+            Box.Builder()
                 .build()
-        ).build()
+        )
+        .build()
+}
+
+fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
+
+    return Arc.Builder()
+        .setAnchorType(ARC_ANCHOR_START)
+        .setAnchorAngle(
+            DegreesProp.Builder(start).build()
+        )
+        .addContent(
+            ArcLine.Builder()
+                .setLength(
+                    DegreesProp.Builder(length).build()
+                )
+                .setColor(color)
+                .setThickness(
+                    DpProp.Builder(70f).build()
+                )
+                .setStrokeCap(STROKE_CAP_BUTT)
+                .build()
+        )
+        .build()
 }
 
 @Preview(device = WearDevices.SMALL_ROUND)
