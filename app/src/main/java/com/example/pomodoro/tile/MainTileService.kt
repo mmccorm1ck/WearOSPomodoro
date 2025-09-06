@@ -1,8 +1,6 @@
 package com.example.pomodoro.tile
 
 import android.content.Context
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import androidx.wear.protolayout.ColorBuilders.ColorProp
 import androidx.wear.protolayout.DimensionBuilders.DegreesProp
 import androidx.wear.protolayout.DimensionBuilders.DpProp
@@ -35,6 +33,7 @@ const val WORK_LENGTH = 25
 const val BREAK_LENGTH = 5
 const val REST_LENGTH = 30
 const val CYCLE_NO = 3
+const val CURRENT_TIME = 10 // Stand-in for timer
 
 /**
  * Skeleton for a tile with no images.
@@ -84,45 +83,48 @@ private fun tile(
 private fun tileLayout(
     requestParams: RequestBuilders.TileRequest,
     context: Context,
-): LayoutElementBuilders.LayoutElement {
+): LayoutElement {
     val totalTime = REST_LENGTH + (WORK_LENGTH + BREAK_LENGTH) * (CYCLE_NO -1) + WORK_LENGTH
     val workAngle = WORK_LENGTH * 180f / totalTime
     val breakAngle = BREAK_LENGTH * 180f / totalTime
     val restAngle = REST_LENGTH * 180f / totalTime
-    val box = Box.Builder()
+    val currentAngle = CURRENT_TIME * 180f /totalTime
+    val sectionBox = Box.Builder() // Box containing phase segments
     var curAngle = 0f
-    for (i in 1..<CYCLE_NO) {
-        box.addContent(
+    for (i in 1..<CYCLE_NO) { // Add work/break sections
+        sectionBox.addContent(
             makeSection(curAngle, workAngle, SECTION_RED)
         )
         curAngle += workAngle
-        box.addContent(
+        sectionBox.addContent(
             makeSection(curAngle, breakAngle, SECTION_GREEN)
         )
         curAngle += breakAngle
     }
-    box.addContent(
+    sectionBox.addContent( // Add final work section
         makeSection(curAngle, workAngle, SECTION_RED)
     )
     curAngle += workAngle
-    box.addContent(
+    sectionBox.addContent( // Add rest section
         makeSection(curAngle, restAngle, SECTION_BLUE)
     )
+    val handBox = Box.Builder() // Box containing timer hand
+        .addContent(
+            makeHand(currentAngle)
+        )
     return EdgeContentLayout.Builder(requestParams.deviceConfiguration)
         .setResponsiveContentInsetEnabled(true)
         .setEdgeContentBehindAllOtherContent(true)
         .setEdgeContent(
-            box.build()
+            sectionBox.build()
         )
         .setContent(
-            Box.Builder()
-                .build()
+            handBox.build()
         )
         .build()
 }
 
 fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
-
     return Arc.Builder()
         .setAnchorType(ARC_ANCHOR_START)
         .setAnchorAngle(
@@ -139,6 +141,60 @@ fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
                 )
                 .setStrokeCap(STROKE_CAP_BUTT)
                 .build()
+        )
+        .build()
+}
+
+fun makeHand(angle: Float) : LayoutElement {
+    val handBox = Box.Builder()
+        .addContent(
+            Arc.Builder()
+                .addContent(
+                    ArcLine.Builder()
+                        .setColor(
+                            ColorProp.Builder(-1).build()
+                        )
+                        .setLength(
+                            DegreesProp.Builder(8f).build()
+                        )
+                        .setThickness(
+                            DpProp.Builder(90f).build()
+                        )
+                        .setStrokeCap(STROKE_CAP_BUTT)
+                        .build()
+                )
+                .setAnchorAngle(
+                    DegreesProp.Builder(angle).build()
+                )
+                .build()
+
+        )
+    val centreBox = Box.Builder()
+        .setHeight(DpProp.Builder(21f).build())
+        .setWidth(DpProp.Builder(21f).build())
+        .addContent(
+            Arc.Builder()
+                .addContent(
+                    ArcLine.Builder()
+                        .setColor(
+                            ColorProp.Builder(-1).build()
+                        )
+                        .setLength(
+                            DegreesProp.Builder(360f).build()
+                        )
+                        .setThickness(
+                            DpProp.Builder(10f).build()
+                        )
+                        .build()
+                )
+                .build()
+    )
+    return Box.Builder()
+        .addContent(
+            handBox.build()
+        )
+        .addContent(
+            centreBox.build()
         )
         .build()
 }
