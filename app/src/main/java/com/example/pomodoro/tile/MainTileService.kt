@@ -1,6 +1,9 @@
 package com.example.pomodoro.tile
 
 import android.content.Context
+import android.icu.text.DecimalFormat
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.Text
 import androidx.wear.protolayout.ColorBuilders.ColorProp
 import androidx.wear.protolayout.DimensionBuilders.DegreesProp
 import androidx.wear.protolayout.DimensionBuilders.DpProp
@@ -9,8 +12,13 @@ import androidx.wear.protolayout.LayoutElementBuilders.ARC_ANCHOR_START
 import androidx.wear.protolayout.LayoutElementBuilders.Arc
 import androidx.wear.protolayout.LayoutElementBuilders.ArcLine
 import androidx.wear.protolayout.LayoutElementBuilders.Box
+import androidx.wear.protolayout.LayoutElementBuilders.Column
+import androidx.wear.protolayout.LayoutElementBuilders.FontStyle
 import androidx.wear.protolayout.LayoutElementBuilders.LayoutElement
 import androidx.wear.protolayout.LayoutElementBuilders.STROKE_CAP_BUTT
+import androidx.wear.protolayout.LayoutElementBuilders.Row
+import androidx.wear.protolayout.LayoutElementBuilders.Text
+import androidx.wear.protolayout.LayoutElementBuilders.Spacer
 import androidx.wear.protolayout.ResourceBuilders
 import androidx.wear.protolayout.TimelineBuilders
 import androidx.wear.protolayout.material.layouts.EdgeContentLayout
@@ -108,7 +116,10 @@ private fun tileLayout(
     sectionBox.addContent( // Add rest section
         makeSection(curAngle, restAngle, SECTION_BLUE)
     )
-    val handBox = Box.Builder() // Box containing timer hand
+    val mainBox = Box.Builder() // Box containing timer hand and buttons
+        .addContent(
+            showInfo(WORK_LENGTH, BREAK_LENGTH, REST_LENGTH)
+        )
         .addContent(
             makeHand(currentAngle)
         )
@@ -119,7 +130,7 @@ private fun tileLayout(
             sectionBox.build()
         )
         .setContent(
-            handBox.build()
+            mainBox.build()
         )
         .build()
 }
@@ -140,6 +151,67 @@ fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
                     DpProp.Builder(70f).build()
                 )
                 .setStrokeCap(STROKE_CAP_BUTT)
+                .build()
+        )
+        .build()
+}
+
+fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
+    return Row.Builder()
+        .addContent(
+            Column.Builder()
+                .addContent(
+                    Spacer.Builder() // Placeholder
+                        .setHeight(DpProp.Builder(90f).build())
+                        .build()
+                )
+                .addContent(
+                    Row.Builder()
+                        .addContent(
+                            Spacer.Builder() // Placeholder
+                                .setWidth(DpProp.Builder(45f).build())
+                                .build()
+                        ).addContent(
+                            Column.Builder()
+                                .addContent(
+                                    Text.Builder()
+                                        .setText(workTime.toString())
+                                        .setFontStyle(
+                                            FontStyle.Builder()
+                                                .setColor(SECTION_RED)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .addContent(
+                                    Text.Builder()
+                                        .setText(breakTime.toString())
+                                        .setFontStyle(
+                                            FontStyle.Builder()
+                                                .setColor(SECTION_GREEN)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .addContent(
+                                    Text.Builder()
+                                        .setText(restTime.toString())
+                                        .setFontStyle(
+                                            FontStyle.Builder()
+                                                .setColor(SECTION_BLUE)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        )
+        .addContent(
+            Spacer.Builder() // Padding
+                .setWidth(DpProp.Builder(90f).build())
                 .build()
         )
         .build()
