@@ -37,8 +37,8 @@ val SECTION_GREEN = ColorProp.Builder(-936181966).build()
 val SECTION_RED = ColorProp.Builder(-922799566).build()
 val SECTION_BLUE = ColorProp.Builder(-936234241).build()
 
-const val WORK_LENGTH = 25
-const val BREAK_LENGTH = 5
+const val WORK_LENGTH = 40
+const val BREAK_LENGTH = 10
 const val REST_LENGTH = 30
 const val CYCLE_NO = 3
 const val CURRENT_TIME = 10 // Stand-in for timer
