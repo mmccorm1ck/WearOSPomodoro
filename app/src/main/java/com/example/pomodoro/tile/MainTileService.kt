@@ -1,9 +1,6 @@
 package com.example.pomodoro.tile
 
 import android.content.Context
-import android.icu.text.DecimalFormat
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.Text
 import androidx.wear.protolayout.ColorBuilders.ColorProp
 import androidx.wear.protolayout.DimensionBuilders.DegreesProp
 import androidx.wear.protolayout.DimensionBuilders.DpProp
@@ -15,10 +12,10 @@ import androidx.wear.protolayout.LayoutElementBuilders.Box
 import androidx.wear.protolayout.LayoutElementBuilders.Column
 import androidx.wear.protolayout.LayoutElementBuilders.FontStyle
 import androidx.wear.protolayout.LayoutElementBuilders.LayoutElement
-import androidx.wear.protolayout.LayoutElementBuilders.STROKE_CAP_BUTT
 import androidx.wear.protolayout.LayoutElementBuilders.Row
-import androidx.wear.protolayout.LayoutElementBuilders.Text
+import androidx.wear.protolayout.LayoutElementBuilders.STROKE_CAP_BUTT
 import androidx.wear.protolayout.LayoutElementBuilders.Spacer
+import androidx.wear.protolayout.LayoutElementBuilders.Text
 import androidx.wear.protolayout.ResourceBuilders
 import androidx.wear.protolayout.TimelineBuilders
 import androidx.wear.protolayout.material.layouts.EdgeContentLayout
@@ -40,12 +37,9 @@ val SECTION_BLUE = ColorProp.Builder(-936234241).build()
 const val WORK_LENGTH = 40
 const val BREAK_LENGTH = 10
 const val REST_LENGTH = 30
-const val CYCLE_NO = 3
+const val CYCLE_NO = 2
 const val CURRENT_TIME = 10 // Stand-in for timer
 
-/**
- * Skeleton for a tile with no images.
- */
 @OptIn(ExperimentalHorologistApi::class)
 class MainTileService : SuspendingTileService() {
 
