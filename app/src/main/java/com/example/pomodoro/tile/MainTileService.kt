@@ -112,10 +112,10 @@ private fun tileLayout(
     )
     val mainBox = Box.Builder() // Box containing timer hand and buttons
         .addContent(
-            showInfo(WORK_LENGTH, BREAK_LENGTH, REST_LENGTH)
+            showInfo(WORK_LENGTH, BREAK_LENGTH, REST_LENGTH) // Settings and buttons
         )
         .addContent(
-            makeHand(currentAngle)
+            makeHand(currentAngle) // Timer hand
         )
     return EdgeContentLayout.Builder(requestParams.deviceConfiguration)
         .setResponsiveContentInsetEnabled(true)
@@ -129,7 +129,7 @@ private fun tileLayout(
         .build()
 }
 
-fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
+fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement { // Makes one section of the timer display
     return Arc.Builder()
         .setAnchorType(ARC_ANCHOR_START)
         .setAnchorAngle(
@@ -150,7 +150,7 @@ fun makeSection(start: Float, length: Float, color: ColorProp) : LayoutElement {
         .build()
 }
 
-fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
+fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement { // Shows current settings and buttons
     return Row.Builder()
         .addContent(
             Column.Builder()
@@ -167,7 +167,7 @@ fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
                                 .build()
                         ).addContent(
                             Column.Builder()
-                                .addContent(
+                                .addContent( // Work time setting
                                     Text.Builder()
                                         .setText(workTime.toString())
                                         .setFontStyle(
@@ -177,7 +177,7 @@ fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
                                         )
                                         .build()
                                 )
-                                .addContent(
+                                .addContent( // Break time setting
                                     Text.Builder()
                                         .setText(breakTime.toString())
                                         .setFontStyle(
@@ -187,7 +187,7 @@ fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
                                         )
                                         .build()
                                 )
-                                .addContent(
+                                .addContent( // Rest time setting
                                     Text.Builder()
                                         .setText(restTime.toString())
                                         .setFontStyle(
@@ -211,8 +211,8 @@ fun showInfo(workTime: Int, breakTime: Int, restTime: Int) : LayoutElement {
         .build()
 }
 
-fun makeHand(angle: Float) : LayoutElement {
-    val handBox = Box.Builder()
+fun makeHand(angle: Float) : LayoutElement { // Makes the clock hand showing current timer position
+    val handBox = Box.Builder() // Makes hand
         .addContent(
             Arc.Builder()
                 .addContent(
@@ -230,12 +230,12 @@ fun makeHand(angle: Float) : LayoutElement {
                         .build()
                 )
                 .setAnchorAngle(
-                    DegreesProp.Builder(angle).build()
+                    DegreesProp.Builder(angle).build() // Set position
                 )
                 .build()
 
         )
-    val centreBox = Box.Builder()
+    val centreBox = Box.Builder() // Makes centre circle
         .setHeight(DpProp.Builder(21f).build())
         .setWidth(DpProp.Builder(21f).build())
         .addContent(
